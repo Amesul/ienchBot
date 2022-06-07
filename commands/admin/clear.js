@@ -14,10 +14,9 @@ module.exports = {
         .addIntegerOption(option => option.setName('number').setDescription('Nombre de message à supprimer').setRequired(true)),
     async execute(bot, interaction, database) {
         const amount = interaction.options.getInteger('number');
-        interaction.channel.bulkDelete(amount, true)
-        return interaction.reply({
-            content: `${amount} messages supprimés`,
+        interaction.channel.bulkDelete(amount, true).then(messages => interaction.reply({
+            content: `${messages.size} messages supprimés`,
             ephemeral: true
-        });
+        }));
     },
 };

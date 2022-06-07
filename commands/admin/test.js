@@ -7,9 +7,8 @@ module.exports = {
     cooldown: 0,
     data: new SlashCommandBuilder()
         .setName('test')
-        .setDescription('Debug command.\nRestricted use to Amesul'),
+        .setDescription('Debug command. Restricted use to Amesul'),
     async execute(bot, interaction, database) {
-        dt = new Date()
         return interaction.reply('Test réussi');
     },
 };
