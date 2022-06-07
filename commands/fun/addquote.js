@@ -28,9 +28,11 @@ module.exports = {
         database.collection("quotes").insertOne({
             quote: interaction.options.get('quote').value,
             name: interaction.options.get('name').value,
+            contexte: interaction.options.get('contexte') ? interaction.options.get('contexte').value : "",
             date: `${dt.getDate()}/${(dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : dt.getMonth() + 1}/${dt.getFullYear()}`,
         });
-        const quoteEmbed = new MessageEmbed().setDescription(`*${interaction.options.get('quote').value}* - ${interaction.options.get('name').value}`)
+
+        const quoteEmbed = new MessageEmbed().setDescription(`***${interaction.options.get('quote').value}*** - ${interaction.options.get('name').value}`)
         interaction.reply({
             embeds: [quoteEmbed]
         })
