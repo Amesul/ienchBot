@@ -28,13 +28,14 @@ module.exports = {
         database.collection("quotes").insertOne({
             quote: interaction.options.get('quote').value,
             name: interaction.options.get('name').value,
-            contexte: interaction.options.get('contexte') ? interaction.options.get('contexte').value : "",
-            date: `${dt.getDate()}/${(dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : dt.getMonth() + 1}/${dt.getFullYear()}`,
+            contexte: interaction.options.get('contexte') ? interaction.options.get('contexte').value : '',
+            date: `${dt.getDate() < 10 ? "0" + (dt.getDate()) : dt.getDate()}/${(dt.getMonth() + 1) < 10 ? "0" + (dt.getMonth() + 1) : dt.getMonth() + 1}/${dt.getFullYear()}`,
         });
 
-        const quoteEmbed = new MessageEmbed().setDescription(`***${interaction.options.get('quote').value}*** - ${interaction.options.get('name').value}`)
+        const quoteEmbed = new MessageEmbed().setTitle('Citation ajoutée !').setDescription(`***${interaction.options.get('quote').value}*** - ${interaction.options.get('name').value}\n ${interaction.options.get('contexte') ? interaction.options.get('contexte').value : ''}`)
         interaction.reply({
-            embeds: [quoteEmbed]
+            embeds: [quoteEmbed],
+            ephemeral: true
         })
     },
 };
