@@ -18,9 +18,7 @@ module.exports = {
             })
             const rand = Math.floor(Math.random() * quoteSize)
             const quoteObj = await database
-                .collection("quotes").find({
-                    validate: true
-                })
+                .collection("quotes").find({})
                 .limit(1)
                 .skip(rand)
                 .toArray();
@@ -28,7 +26,7 @@ module.exports = {
         }
         const quote = await getQuote();
 
-        const quoteMessage = new MessageEmbed().setDescription(`*${quote.quote.trim()}* - ${quote.name.trim()}, ${quote.date ? `le ${quote.date}.` : 'à une date inconnue.'}`)
+        const quoteMessage = new MessageEmbed().setDescription(`*${quote.quote.trim()}* - ${quote.name.trim()}, le ${quote.date}.\n${quote.contexte ? `${quote.contexte}` : ''}`)
         interaction.reply({
             embeds: [quoteMessage]
         })
