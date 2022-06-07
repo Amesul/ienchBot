@@ -41,7 +41,7 @@ MongoClient.connect(uri, function(err, client) {
   database = client.db("bande_de_iench");
 });
 
-//Declare Discord Client
+//Discord Client
 const bot = new Client({
     intents: [
         Intents.FLAGS.GUILDS,
