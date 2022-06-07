@@ -10,31 +10,7 @@ const {
     mongoPath
 } = require('./config.json');
 
-// const MongoClient = require('mongodb').MongoClient;
 let database;
-// const client = new MongoClient(
-//     mongoPath, {
-//         useNewUrlParser: true
-//     }, {
-//         useUnifiedTopology: true
-//     }, {
-//         keepAlive: true
-//     }
-// );
-// async function run() {
-//     try {
-//         // Connect the client to the server
-//         await client.connect();
-//         // Establish and verify connection
-//         await client.db('admin').command({
-//             ping: 1
-//         });
-//         database = client.db('bande_de_iench');
-//         console.log('Connected successfully to server!');
-//     } finally {}
-// }
-// run().catch(console.error);
-
 var MongoClient = require('mongodb').MongoClient;
 var uri = "mongodb://discord:sam010201SAM@cluster0-shard-00-00.wtw8u.mongodb.net:27017,cluster0-shard-00-01.wtw8u.mongodb.net:27017,cluster0-shard-00-02.wtw8u.mongodb.net:27017/?ssl=true&replicaSet=atlas-1ykgx1-shard-0&authSource=admin&retryWrites=true&w=majority";
 MongoClient.connect(uri, function(err, client) {
