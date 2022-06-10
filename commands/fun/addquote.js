@@ -1,12 +1,11 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
 module.exports = {
-  permissions: "SEND_MESSAGES",
-  enable: true,
   cooldown: 0,
   data: new SlashCommandBuilder()
     .setName("addquote")
     .setDescription("Ajoute une citation au bot")
+    .setDefaultMemberPermissions(1024)
     .addStringOption((option) =>
       option
         .setName("quote")

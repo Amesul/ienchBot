@@ -76,14 +76,6 @@ bot.on("interactionCreate", async (interaction) => {
   const command = bot.commands.get(interaction.commandName);
   if (!command) return;
 
-  //Command enable
-  if (!command.enable) {
-    return interaction.reply({
-      content: "Cette commande est temporairement désactivée :/",
-      ephemeral: true,
-    });
-  }
-
   //
   if (command.permissions) {
     const authorPerms = interaction.channel.permissionsFor(interaction.user);
@@ -124,7 +116,7 @@ bot.on("interactionCreate", async (interaction) => {
         return interaction.reply({
           content: `Tu dois attendre *${DateFormat(
             timeLeft
-          )}* avant de pouvoir réutiliser cette commande !`,
+          )}* avant de pouvoir réutiliser cette commande donc calme-toi sale chien !`,
           ephemeral: true,
         });
       }

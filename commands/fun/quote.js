@@ -1,14 +1,16 @@
-const { MessageEmbed } = require("discord.js");
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const {
+  MessageEmbed
+} = require("discord.js");
+const {
+  SlashCommandBuilder
+} = require("@discordjs/builders");
 module.exports = {
-  permissions: "SEND_MESSAGES",
-  enable: true,
   cooldown: 10,
   data: new SlashCommandBuilder()
     .setName("quote")
     .setDescription(
       "Retourne une croustillante citation, toujours hors-contexte bien évidemment."
-    ),
+    ).setDefaultMemberPermissions(1024),
   async execute(bot, interaction, database) {
     async function getQuote() {
       const quoteSize = await database.collection("quotes").countDocuments({});

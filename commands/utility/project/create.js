@@ -1,86 +1,82 @@
-const { Permissions } = require("discord.js");
+const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
+const validateFile = require("./validate.js");
+// const declineFile = require('decline.js')
 module.exports = {
-  async execute(projectName, member, interaction, database) {
-    const IDs = new Object();
-    const category = `━━ 🎥 ${projectName} 🎥 ━━`;
-    interaction.guild.roles
-      .create({
-        name: projectName,
-        color: "GREY",
-      })
-      .then((role) => {
-        IDs.roleId = role.id;
-        //CATEGORY
-        interaction.guild.channels
-          .create(category, {
-            type: "GUILD_CATEGORY",
-            permissionOverwrites: [
-              {
-                id: interaction.guild.id,
-                deny: [Permissions.FLAGS.VIEW_CHANNEL],
-              },
-              {
-                id: interaction.guild.roles.cache.get(role.id),
-                allow: [Permissions.FLAGS.VIEW_CHANNEL],
-              },
-            ],
-          })
-          .then((cat) => {
-            IDs.catId = cat.id;
-            //CHANNELS
-            interaction.guild.channels.create(`🔧-général-${projectName}`, {
-              type: "GUILD_TEXT",
-              topic: "Canal général",
-              parent: cat,
-            });
-            interaction.guild.channels.create(`⚙-organisation-${projectName}`, {
-              type: "GUILD_TEXT",
-              topic: "Canal pour l'organisation, les dates et les réunions",
-              parent: cat,
-            });
-            interaction.guild.channels.create(`📋-notes-${projectName}`, {
-              type: "GUILD_TEXT",
-              topic: "Canal pour épingler des idées, ou toute chose importante",
-              parent: cat,
-            });
-            interaction.guild.channels.create(
-              `📝-préprodudction-${projectName}`,
-              {
-                type: "GUILD_TEXT",
-                topic: "Canal pour l'équipe de pré-production",
-                parent: cat,
-              }
-            );
-            interaction.guild.channels.create(
-              `💻-postproduction-${projectName}`,
-              {
-                type: "GUILD_TEXT",
-                topic: "Canal pour l'équipe de post-production",
-                parent: cat,
-              }
-            );
-            interaction.guild.channels.create(`🎥-matériel-${projectName}`, {
-              type: "GUILD_TEXT",
-              topic: "Canal pour gérer le matériel",
-              parent: cat,
-            });
-            interaction.guild.channels.create(`🌈-hors-sujet-${projectName}`, {
-              type: "GUILD_TEXT",
-              topic: "Canal pour spam",
-              parent: cat,
-            });
-            interaction.guild.channels.create(`🎙️ Vocal - ${projectName}`, {
-              type: "GUILD_VOICE",
-              parent: cat,
-            });
-            database.collection("projects").insertOne({
-              name: projectName.toLowerCase(),
-              categoryId: IDs.catId,
-              roleId: IDs.roleId,
-            });
-          });
+  async execute(interaction, database, projectName) {
+    const projectCheck = await database.collection("projects").findOne({
+      name: projectName.toLowerCase(),
+    });
+
+    if (projectCheck)
+      return interaction.reply({
+        content: `Le projet "*${projectName}*" existe déjà ! Si c'est une erreur, contacte un·e admin.`,
+        ephemeral: true,
       });
 
-    return interaction.reply(`Projet '*${projectName}*' créé !`);
+    const creator = interaction.user;
+    const pitch = interaction.options.getString("pitch");
+    const genre = interaction.options.getString("genre");
+    const duration = interaction.options.getInteger("duration");
+
+    const projectPage = new MessageEmbed()
+      .setTitle(projectName)
+      .setDescription(pitch)
+      .addField("Créé par", `<@${creator.id}>`)
+      .addFields([
+        {
+          name: "Genre",
+          value: genre,
+          inline: true,
+        },
+        {
+          name: "Durée",
+          value: `${duration} minutes`,
+          inline: true,
+        },
+      ])
+      .setTimestamp();
+    const buttons = new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+          .setCustomId("validate")
+          .setLabel("Valider")
+          .setStyle("SUCCESS")
+      )
+      .addComponents(
+        new MessageButton()
+          .setCustomId("decline")
+          .setLabel("Refuser")
+          .setStyle("DANGER")
+      );
+    interaction.guild.channels.cache
+      .get("984103120957231235")
+      .send({
+        embeds: [projectPage],
+        components: [buttons],
+      })
+      .then((msg) => {
+        const collector = msg.createMessageComponentCollector({
+          time: 60000,
+        });
+        collector.on("collect", async (i) => {
+          if (i.customId === "validate")
+            validateFile.execute(
+              msg,
+              interaction,
+              database,
+              projectName,
+              projectPage
+            );
+          // if (i.customId === "decline") declineFile.execute(database, projectName, projectPage)
+          buttons.components.forEach((element) => element.setDisabled(true));
+          msg.edit({
+            components: [buttons],
+          });
+        });
+      });
+    return interaction.reply({
+      content: `Le projet "*${projectName}*" a été proposé ! S'il est accepté, tu le verras dans <#984102745722220554>`,
+      ephemeral: true,
+    });
   },
 };

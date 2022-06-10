@@ -1,13 +1,11 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const fs = require("fs");
 
 module.exports = {
-  permissions: "SEND_MESSAGES",
-  enable: true,
   cooldown: 60,
   data: new SlashCommandBuilder()
     .setName("project")
     .setDescription("Gestion des projets")
+    .setDefaultMemberPermissions(1024)
     .addSubcommandGroup((group) =>
       group
         .setName("member")
@@ -22,12 +20,13 @@ module.exports = {
                 .setDescription("Nom du projet")
                 .setRequired(true)
             )
-            .addMentionableOption((option) =>
+            .addUserOption((option) =>
               option
                 .setName("member")
                 .setDescription("Membre à ajouter")
                 .setRequired(true)
             )
+            .addBooleanOption((option) => option.setName("acteurice").setDescription('Le membre à ajouter est-iel un·e acteur·ice ?'))
         )
         .addSubcommand((subcommand) =>
           subcommand
@@ -56,6 +55,21 @@ module.exports = {
             .setName("project-name")
             .setDescription("Nom du projet")
             .setRequired(true)
+        ).addStringOption((option) =>
+          option
+            .setName("pitch")
+            .setDescription("Pitch du projet")
+            .setRequired(true)
+        ).addStringOption((option) =>
+          option
+            .setName("genre")
+            .setDescription("Genre du projet")
+            .setRequired(true)
+        ).addIntegerOption((option) =>
+          option
+            .setName("duration")
+            .setDescription("Durée du film")
+            .setRequired(true)
         )
     )
     .addSubcommand((subcommand) =>
@@ -80,14 +94,12 @@ module.exports = {
             .setRequired(true)
         )
     ),
-
   async execute(bot, interaction, database) {
-    const projectName = interaction.options.getString("project-name");
-    const member = interaction.options.getMentionable("member") || undefined;
     const subcommand = interaction.options.getSubcommand().toLowerCase();
+    const projectName = interaction.options.getString("project-name");
     const subcommandFile = require(`./project/${subcommand}.js`);
     try {
-      subcommandFile.execute(projectName, member, interaction, database);
+      subcommandFile.execute(interaction, database, projectName);
     } catch {}
   },
 };
